@@ -1,0 +1,19 @@
+{
+    "name": "sheronov/php-mystem",
+    "description": "A PHP wrapper for Yandex MyStem program",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "sheronov",
+            "email": "webrush@bk.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Sheronov\\PhpMyStem\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
