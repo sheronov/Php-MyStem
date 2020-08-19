@@ -1,0 +1,67 @@
+{
+    "name": "sheronov/mystem-binaries",
+    "version": "3.1",
+    "license": "MIT",
+    "extra": {
+        "platform-specific-packages": {
+            "sheronov/mystem-binaries-3.1": [
+                {
+                    "yandex/mystem-macos": "dev-master",
+                    "os": "Darwin"
+                },
+                {
+                    "yandex/mystem-linux": "dev-master",
+                    "os": "Linux"
+                },
+                {
+                    "yandex/mystem-windows": "dev-master",
+                    "os": "Windows"
+                }
+            ]
+        }
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "yandex/mystem-windows",
+                "version": "dev-master",
+                "bin": [
+                    "mystem.exe"
+                ],
+                "dist": {
+                    "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-win-64bit.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "yandex/mystem-linux",
+                "version": "dev-master",
+                "bin": [
+                    "mystem"
+                ],
+                "dist": {
+                    "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-linux-64bit.tar.gz",
+                    "type": "tar"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "yandex/mystem-macos",
+                "version": "dev-master",
+                "bin": [
+                    "mystem"
+                ],
+                "dist": {
+                    "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-macosx.tar.gz",
+                    "type": "tar"
+                }
+            }
+        }
+    ]
+}

@@ -12,10 +12,12 @@ class System
 {
     protected const FAMILY_WINDOWS = 'Windows';
     protected const FAMILY_LINUX   = 'Linux';
+    protected const FAMILY_MACOS   = 'Darwin';
 
-    protected const BIN_PATH    = 'bin';
-    protected const WINDOWS_BIN = 'mystem.exe';
+    protected const BIN_PATH    = 'vendor/bin';
+    protected const WINDOWS_BIN = 'mystem.exe.bat';
     protected const LINUX_BIN   = 'mystem';
+    protected const MACOS_BIN   = 'mystem';
 
     /**
      * Running MyStem with input as pipe to proc through php proc_open
@@ -75,11 +77,14 @@ class System
     protected static function myStemPath(): string
     {
         $binPath = self::binPath();
-        if (self::isWindows() && is_file($binPath.self::WINDOWS_BIN)) {
+        if (self::isWindows() && file_exists($binPath.self::WINDOWS_BIN)) {
             return $binPath.self::WINDOWS_BIN;
         }
-        if (self::isLinux() && is_file($binPath.self::LINUX_BIN)) {
+        if (self::isLinux() && file_exists($binPath.self::LINUX_BIN)) {
             return $binPath.self::LINUX_BIN;
+        }
+        if (self::isMacos() && file_exists($binPath.self::MACOS_BIN)) {
+            return $binPath.self::MACOS_BIN;
         }
 
         throw new MyStemNotFoundException('The bin file myStem does not exist');
@@ -98,5 +103,10 @@ class System
     protected static function isLinux(): bool
     {
         return PHP_OS_FAMILY === self::FAMILY_LINUX;
+    }
+
+    protected static function isMacos(): bool
+    {
+        return PHP_OS_FAMILY === self::FAMILY_MACOS;
     }
 }

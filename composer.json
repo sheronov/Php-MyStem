@@ -2,10 +2,11 @@
     "name": "sheronov/php-mystem",
     "description": "A PHP wrapper for Yandex MyStem program",
     "type": "project",
+    "keywords": ["lemma", "lemmatize", "stemmer", "yandex", "mystem"],
     "license": "MIT",
     "authors": [
         {
-            "name": "sheronov",
+            "name": "Evgeniy Sheronov",
             "email": "webrush@bk.ru"
         }
     ],
@@ -18,5 +19,9 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*"
+    },
+    "scripts": {
+        "post-install-cmd": ["Sheronov\\PhpMyStem\\Utils\\MyStemInstaller::install"],
+        "post-update-cmd": ["Sheronov\\PhpMyStem\\Utils\\MyStemInstaller::update"]
     }
 }
