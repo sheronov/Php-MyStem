@@ -5,6 +5,7 @@ namespace Sheronov\PhpMyStem\Utils;
 
 
 use BadFunctionCallException;
+use RuntimeException;
 use Sheronov\PhpMyStem\Exceptions\MyStemException;
 use Sheronov\PhpMyStem\Exceptions\MyStemNotFoundException;
 
@@ -77,17 +78,30 @@ class System
     protected static function myStemPath(): string
     {
         $binPath = self::binPath();
-        if (self::isWindows() && file_exists($binPath.self::WINDOWS_BIN)) {
-            return $binPath.self::WINDOWS_BIN;
-        }
-        if (self::isLinux() && file_exists($binPath.self::LINUX_BIN)) {
-            return $binPath.self::LINUX_BIN;
-        }
-        if (self::isMacos() && file_exists($binPath.self::MACOS_BIN)) {
-            return $binPath.self::MACOS_BIN;
+        $binaryPath = null;
+
+        switch (true) {
+            case self::isWindows():
+                $binaryPath = $binPath.self::WINDOWS_BIN;
+                break;
+
+            case self::isLinux():
+                $binaryPath = $binPath.self::LINUX_BIN;
+                break;
+
+            case self::isMacos():
+                $binaryPath = $binPath.self::MACOS_BIN;
+                break;
+
+            default:
+                throw new RuntimeException("Wrong OS");
         }
 
-        throw new MyStemNotFoundException('The bin file myStem does not exist');
+        if (!file_exists($binaryPath)) {
+            throw new MyStemNotFoundException('The bin file myStem does not exist');
+        }
+
+        return $binaryPath;
     }
 
     protected static function binPath(): string
