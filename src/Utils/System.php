@@ -4,60 +4,90 @@
 namespace Sheronov\PhpMyStem\Utils;
 
 
+use BadFunctionCallException;
+use Sheronov\PhpMyStem\Exceptions\MyStemException;
+use Sheronov\PhpMyStem\Exceptions\MyStemNotFoundException;
+
 class System
 {
-    public const FAMILY_WINDOWS = 'Windows';
-    public const FAMILY_LINUX = 'Linux';
+    protected const FAMILY_WINDOWS = 'Windows';
+    protected const FAMILY_LINUX   = 'Linux';
 
-    public static function runMyStem(string $input, array $arguments = [])
+    protected const BIN_PATH    = 'bin';
+    protected const WINDOWS_BIN = 'mystem.exe';
+    protected const LINUX_BIN   = 'mystem';
+
+    /**
+     * Running MyStem with input as pipe to proc through php proc_open
+     *
+     * @param  string  $input
+     * @param  array  $arguments
+     * @param  string|null  $myStemPath
+     *
+     * @return string
+     * @throws MyStemException
+     * @throws MyStemNotFoundException
+     */
+    public static function runMyStem(string $input, array $arguments = [], string $myStemPath = null): string
     {
-        $output = null;
-        if(!$path = self::myStemPath()) {
-            return null;
+        if (!isset($myStemPath)) {
+            $myStemPath = self::myStemPath();
         }
 
-        $arguments[] = '--format=json';
-        $arguments[] = '-l';
+        if (!empty($arguments)) {
+            $myStemPath .= ' '.implode(' ', $arguments);
+        }
 
         $descriptorSpec = [
-            ['pipe','r'],
-            ['pipe', 'w'],
-            // ['file','/tmp/mystem-errors.txt','a']
+            ['pipe', 'r'], //0 - stdIn
+            ['pipe', 'w'], //1 - stdOut
+            ['pipe', 'w'], //2 - stdErr
         ];
 
-        // $cwd = '/tmp';
-        $cwd = null;
+        $process = proc_open($myStemPath, $descriptorSpec, $pipes, null, null);
 
-        $process = proc_open($path.' '.implode(' ',$arguments), $descriptorSpec, $pipes, $cwd, []);
-
-        if(is_resource($process)) {
-            // $pipes now looks like this:
-            // 0 => writeable handle connected to child stdin
-            // 1 => readable handle connected to child stdout
-            // Any error output will be appended to /tmp/error-output.txt
-
-            fwrite($pipes[0],  $input);
-            fclose($pipes[0]);
-
-            $output = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-
-            proc_close($process);
+        if (!is_resource($process)) {
+            throw new BadFunctionCallException('There is no "proc_open" function in your system');
         }
+
+        fwrite($pipes[0], $input);
+        fclose($pipes[0]);
+
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        $stdErr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        if (!empty($stdErr)) {
+            throw new MyStemException($stdErr);
+        }
+
+        proc_close($process);
 
         return $output;
     }
 
-    protected static function myStemPath(): ?string
+    /**
+     * @return string
+     * @throws MyStemNotFoundException
+     */
+    protected static function myStemPath(): string
     {
-        if(self::isWindows()) {
-            return dirname(__FILE__, 3).DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mystem.exe';
+        $binPath = self::binPath();
+        if (self::isWindows() && is_file($binPath.self::WINDOWS_BIN)) {
+            return $binPath.self::WINDOWS_BIN;
         }
-        if(self::isLinux()) {
-            return dirname(__FILE__, 3).DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mystem';
+        if (self::isLinux() && is_file($binPath.self::LINUX_BIN)) {
+            return $binPath.self::LINUX_BIN;
         }
 
-        return null;
+        throw new MyStemNotFoundException('The bin file myStem does not exist');
+    }
+
+    protected static function binPath(): string
+    {
+        return dirname(__FILE__, 3).DIRECTORY_SEPARATOR.self::BIN_PATH.DIRECTORY_SEPARATOR;
     }
 
     protected static function isWindows(): bool
