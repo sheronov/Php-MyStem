@@ -1,3 +1,6 @@
 vendor/
+bin/linux
+bin/windows
+bin/macos
 .idea
 composer.lock

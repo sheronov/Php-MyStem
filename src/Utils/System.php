@@ -6,6 +6,8 @@ namespace Sheronov\PhpMyStem\Utils;
 
 use BadFunctionCallException;
 use Composer\Script\Event;
+use Exception;
+use PharData;
 use RuntimeException;
 use Sheronov\PhpMyStem\Exceptions\MyStemException;
 use Sheronov\PhpMyStem\Exceptions\MyStemNotFoundException;
@@ -16,10 +18,10 @@ class System
     protected const FAMILY_LINUX   = 'Linux';
     protected const FAMILY_MACOS   = 'Darwin';
 
-    protected const BIN_PATH    = 'vendor/bin';
-    protected const WINDOWS_BIN = 'mystem.exe.bat';
-    protected const LINUX_BIN   = 'mystem';
-    protected const MACOS_BIN   = 'mystem';
+    protected const BIN_PATH    = 'bin';
+    protected const WINDOWS_BIN = 'windows/mystem.exe';
+    protected const LINUX_BIN   = 'linux/mystem';
+    protected const MACOS_BIN   = 'macos/mystem';
 
     /**
      * Running MyStem with input as pipe to proc through php proc_open
@@ -72,9 +74,97 @@ class System
         return $output;
     }
 
-    public static function downloadMystem(string $path, array $oses = []): void
+    public static function downloadMystem(array $oses = []): void
     {
-        echo 'Downloaded success for oses: '.implode(', ', $oses).' to '.$path;;
+        if (empty($oses)) {
+            $oses = ['l', 'w', 'm'];
+        }
+        $composerJsonPath = dirname(__FILE__, 3).DIRECTORY_SEPARATOR.'composer.json';
+        if (!file_exists($composerJsonPath)) {
+            throw new RuntimeException('File not found '.$composerJsonPath);
+        }
+        $toPath = dirname(__FILE__, 3).DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR;
+        $composerJson = json_decode(file_get_contents($composerJsonPath), true);
+
+        $distUrls = $composerJson['extra']['dists'] ?? [];
+
+        foreach ($distUrls as $os => $url) {
+            if (in_array(mb_strtolower(mb_substr($os, 0, 1)), $oses, true)) {
+                $localPath = $toPath.basename($url);
+
+                if (!file_exists($localPath)) {
+                    if (self::downloadFile($url, $localPath)) {
+                        echo 'Success downloaded file from '.$url.' for '.$os.PHP_EOL;
+                    } else {
+                        throw new RuntimeException('Error download file '.$url.' for '.$os);
+                    }
+                }
+
+                if (self::isArchive($localPath) && self::unArchive($localPath, mb_strtolower($os))) {
+                    echo 'Success unarchived to '.$toPath.mb_strtolower($os).' directory'.PHP_EOL;
+                    try {
+                        unlink($localPath);
+                    } catch (Exception $exception) {
+                        echo 'Can not delete file '.$localPath.PHP_EOL;
+                    }
+                }
+            }
+        }
+    }
+
+
+    protected static function unArchive(string $filePath, string $prefix): bool
+    {
+        $pathInfo = pathinfo($filePath);
+        $extractTo = $pathInfo['dirname'].DIRECTORY_SEPARATOR.$prefix;
+        $extension = $pathInfo['extension'] ?? null;
+
+        switch ($extension) {
+            case 'gz':
+                $phar = new PharData($filePath);
+                $phar->decompress();
+                $result = self::unArchive(mb_substr($filePath, 0, mb_strlen($filePath) - mb_strlen('.gz')), $prefix);
+                break;
+            case 'tar':
+            case 'zip':
+                $phar = new PharData($filePath);
+                $result = $phar->extractTo($extractTo);
+                if ($extension === 'tar') {
+                    unlink($filePath);
+                }
+                break;
+            default:
+                throw new RuntimeException('Wrong archive extension '.$filePath);
+        }
+
+        return $result;
+    }
+
+    protected static function isArchive(string $path): bool
+    {
+        return in_array(pathinfo($path)['extension'] ?? null, ['zip', 'tar', 'gz'], true);
+    }
+
+    protected static function downloadFile(string $url, string $localPath): bool
+    {
+        $fp = fopen($localPath, 'wb');
+
+        if ($fp === false) {
+            throw new RuntimeException('Can not create file here '.$localPath);
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+        fclose($fp);
+
+        return $result;
     }
 
     /**
