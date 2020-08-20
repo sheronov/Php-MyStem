@@ -1,5 +1,6 @@
 {
     "name": "sheronov/php-mystem",
+    "version": "1.0.2",
     "description": "A PHP wrapper for Yandex MyStem program",
     "type": "project",
     "keywords": ["lemma", "lemmatize", "stemmer", "yandex", "mystem"],
@@ -15,19 +16,23 @@
             "Sheronov\\PhpMyStem\\": "src/"
         }
     },
+    "bin": [
+        "mystem-downloader"
+    ],
     "minimum-stability": "dev",
     "repositories": [
         {
             "type": "package",
             "package": {
                 "name": "sheronov/mystem-windows",
-                "version": "3.1",
+                "version": "master",
                 "bin": [
                     "mystem.exe"
                 ],
                 "dist": {
                     "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-win-64bit.zip",
-                    "type": "zip"
+                    "type": "zip",
+                    "reference": "master"
                 }
             }
         },
@@ -35,18 +40,20 @@
             "type": "package",
             "package": {
                 "name": "sheronov/mystem-nix-bin",
-                "version": "3.1",
+                "version": "master",
                 "bin": [
                     "mystem"
                 ],
                 "dist": {
                     "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-linux-64bit.tar.gz",
-                    "type": "tar"
+                    "type": "tar",
+                    "reference": "master"
                 },
                 "extra": {
                     "macos_dist": {
                         "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-macosx.tar.gz",
-                        "type": "tar"
+                        "type": "tar",
+                        "reference": "master"
                     }
                 }
             }
@@ -54,9 +61,7 @@
     ],
     "require": {
         "php": "^7.2",
-        "ext-json": "*",
-        "sheronov/mystem-windows": "dev-master",
-        "sheronov/mystem-nix-bin": "dev-master"
+        "ext-json": "*"
     },
     "scripts": {
         "pre-install-cmd": [
@@ -65,5 +70,13 @@
         "pre-update-cmd": [
             "Sheronov\\PhpMyStem\\Utils\\System::nixBinaryFileSelect"
         ]
+    },
+    "extra": {
+        "mystem": "3.1",
+        "dists": {
+            "Windows": "https://download.cdn.yandex.net/mystem/mystem-3.1-win-64bit.zip",
+            "Linux": "https://download.cdn.yandex.net/mystem/mystem-3.1-linux-64bit.tar.gz",
+            "Macos": "https://download.cdn.yandex.net/mystem/mystem-3.1-macosx.tar.gz"
+        }
     }
 }

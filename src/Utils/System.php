@@ -72,6 +72,11 @@ class System
         return $output;
     }
 
+    public static function downloadMystem(string $path, array $oses = []): void
+    {
+        echo 'Downloaded success for oses: '.implode(', ', $oses).' to '.$path;;
+    }
+
     /**
      * Replacing URL for MacOS bin file MyStem
      * Running when composer install/update
@@ -80,6 +85,7 @@ class System
      */
     public static function nixBinaryFileSelect(Event $event): void
     {
+        $event->getIO()->write('Merging repositories');
         $package = $event->getComposer()->getPackage();
         $repositories = $package->getRepositories();
 
