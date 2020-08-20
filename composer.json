@@ -16,12 +16,54 @@
         }
     },
     "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "sheronov/mystem-windows",
+                "version": "3.1",
+                "bin": [
+                    "mystem.exe"
+                ],
+                "dist": {
+                    "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-win-64bit.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "sheronov/mystem-nix-bin",
+                "version": "3.1",
+                "bin": [
+                    "mystem"
+                ],
+                "dist": {
+                    "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-linux-64bit.tar.gz",
+                    "type": "tar"
+                },
+                "extra": {
+                    "macos_dist": {
+                        "url": "https://download.cdn.yandex.net/mystem/mystem-3.1-macosx.tar.gz",
+                        "type": "tar"
+                    }
+                }
+            }
+        }
+    ],
     "require": {
         "php": "^7.2",
-        "ext-json": "*"
+        "ext-json": "*",
+        "sheronov/mystem-windows": "^3.1",
+        "sheronov/mystem-nix-bin": "^3.1"
     },
     "scripts": {
-        "post-install-cmd": ["Sheronov\\PhpMyStem\\Utils\\MyStemInstaller::install"],
-        "post-update-cmd": ["Sheronov\\PhpMyStem\\Utils\\MyStemInstaller::update"]
+        "pre-install-cmd": [
+            "Sheronov\\PhpMyStem\\Utils\\System::nixBinaryFileSelect"
+        ],
+        "pre-update-cmd": [
+            "Sheronov\\PhpMyStem\\Utils\\System::nixBinaryFileSelect"
+        ]
     }
 }

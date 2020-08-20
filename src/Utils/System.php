@@ -5,6 +5,7 @@ namespace Sheronov\PhpMyStem\Utils;
 
 
 use BadFunctionCallException;
+use Composer\Script\Event;
 use RuntimeException;
 use Sheronov\PhpMyStem\Exceptions\MyStemException;
 use Sheronov\PhpMyStem\Exceptions\MyStemNotFoundException;
@@ -72,6 +73,28 @@ class System
     }
 
     /**
+     * Replacing URL for MacOS bin file MyStem
+     * Running when composer install/update
+     *
+     * @param  Event  $event
+     */
+    public static function nixBinaryFileSelect(Event $event): void
+    {
+        $package = $event->getComposer()->getPackage();
+        $repositories = $package->getRepositories();
+
+        foreach ($repositories as $key => $repository) {
+            if (isset($repository['package']['extra']['macos_dist']) && self::isMacos()) {
+                $repositories[$key]['package']['dist'] = $repository['package']['extra']['macos_dist'];
+            }
+        }
+
+        if (method_exists($package, 'setRepositories')) {
+            $package->setRepositories($repositories);
+        }
+    }
+
+    /**
      * @return string
      * @throws MyStemNotFoundException
      */
@@ -123,4 +146,5 @@ class System
     {
         return PHP_OS_FAMILY === self::FAMILY_MACOS;
     }
+
 }
