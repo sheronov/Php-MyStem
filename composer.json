@@ -1,6 +1,6 @@
 {
     "name": "sheronov/php-mystem",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "A PHP wrapper for Yandex MyStem program",
     "type": "project",
     "keywords": ["lemma", "lemmatize", "stemmer", "yandex", "mystem"],
@@ -17,7 +17,7 @@
         }
     },
     "bin": [
-        "bin/mystem-downloader"
+        "bin/mystem-downloader.php"
     ],
     "minimum-stability": "dev",
     "repositories": [
