@@ -55,8 +55,8 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
-        "sheronov/mystem-windows": "^3.1",
-        "sheronov/mystem-nix-bin": "^3.1"
+        "sheronov/mystem-windows": "dev-master",
+        "sheronov/mystem-nix-bin": "dev-master"
     },
     "scripts": {
         "pre-install-cmd": [
