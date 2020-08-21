@@ -11,6 +11,7 @@ use PharData;
 use RuntimeException;
 use Sheronov\PhpMyStem\Exceptions\MyStemException;
 use Sheronov\PhpMyStem\Exceptions\MyStemNotFoundException;
+use ZipArchive;
 
 class System
 {
@@ -100,6 +101,10 @@ class System
                     }
                 }
 
+                if (file_exists($toPath.mb_strtolower($os))) {
+                    self::recursiveDelete($toPath.mb_strtolower($os));
+                }
+
                 if (self::isArchive($localPath) && self::unArchive($localPath, mb_strtolower($os))) {
                     echo 'Success unarchived to '.$toPath.mb_strtolower($os).' directory'.PHP_EOL;
                     try {
@@ -112,6 +117,27 @@ class System
         }
     }
 
+    protected static function recursiveDelete(string $path): bool
+    {
+        if (is_file($path)) {
+            return unlink($path);
+        }
+        $deleted = false;
+        $deletedFiles = true;
+        $files = glob($path.DIRECTORY_SEPARATOR.'*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $deletedFiles = $deletedFiles && unlink($file);
+            } else {
+                $deletedFiles = $deletedFiles && self::recursiveDelete($file);
+            }
+        }
+        if ($deletedFiles) {
+            $deleted = rmdir($path);
+        }
+        return $deleted;
+    }
+
 
     protected static function unArchive(string $filePath, string $prefix): bool
     {
@@ -120,18 +146,21 @@ class System
         $extension = $pathInfo['extension'] ?? null;
 
         switch ($extension) {
+            case 'zip':
+                $zipArchive = new ZipArchive();
+                $zipArchive->open($filePath);
+                $result = $zipArchive->extractTo($extractTo);
+                $zipArchive->close();
+                break;
             case 'gz':
                 $phar = new PharData($filePath);
                 $phar->decompress();
                 $result = self::unArchive(mb_substr($filePath, 0, mb_strlen($filePath) - mb_strlen('.gz')), $prefix);
                 break;
             case 'tar':
-            case 'zip':
                 $phar = new PharData($filePath);
                 $result = $phar->extractTo($extractTo);
-                if ($extension === 'tar') {
-                    unlink($filePath);
-                }
+                unlink($filePath);
                 break;
             default:
                 throw new RuntimeException('Wrong archive extension '.$filePath);
