@@ -1,6 +1,6 @@
 {
     "name": "sheronov/php-mystem",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "A PHP wrapper for Yandex MyStem program",
     "type": "project",
     "keywords": [
@@ -23,7 +23,7 @@
         }
     },
     "bin": [
-        "bin/mystem-downloader"
+        "bin/mystem-downloader.php"
     ],
     "minimum-stability": "dev",
     "repositories": [
@@ -73,10 +73,10 @@
     },
     "scripts": {
         "pre-install-cmd": [
-            "bin/mystem-downloader"
+            "bin/mystem-downloader.php"
         ],
         "pre-update-cmd": [
-            "bin/mystem-downloader"
+            "bin/mystem-downloader.php"
         ]
     },
     "extra": {
