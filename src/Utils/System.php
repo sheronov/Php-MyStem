@@ -5,7 +5,6 @@ namespace Sheronov\PhpMyStem\Utils;
 
 
 use BadFunctionCallException;
-use Composer\Script\Event;
 use Exception;
 use PharData;
 use RuntimeException;
@@ -197,29 +196,6 @@ class System
     }
 
     /**
-     * Replacing URL for MacOS bin file MyStem
-     * Running when composer install/update
-     *
-     * @param  Event  $event
-     */
-    public static function nixBinaryFileSelect(Event $event): void
-    {
-        $event->getIO()->write('Merging repositories');
-        $package = $event->getComposer()->getPackage();
-        $repositories = $package->getRepositories();
-
-        foreach ($repositories as $key => $repository) {
-            if (isset($repository['package']['extra']['macos_dist']) && self::isMacos()) {
-                $repositories[$key]['package']['dist'] = $repository['package']['extra']['macos_dist'];
-            }
-        }
-
-        if (method_exists($package, 'setRepositories')) {
-            $package->setRepositories($repositories);
-        }
-    }
-
-    /**
      * @return string
      * @throws MyStemNotFoundException
      */
@@ -227,22 +203,31 @@ class System
     {
         $binPath = self::binPath();
         $binaryPath = null;
+        $letter = null;
 
         switch (true) {
             case self::isWindows():
                 $binaryPath = $binPath.self::WINDOWS_BIN;
+                $letter = 'w';
                 break;
 
             case self::isLinux():
                 $binaryPath = $binPath.self::LINUX_BIN;
+                $letter = 'l';
                 break;
 
             case self::isMacos():
                 $binaryPath = $binPath.self::MACOS_BIN;
+                $letter = 'm';
                 break;
 
             default:
                 throw new RuntimeException("Wrong OS");
+        }
+
+        if (!file_exists($binaryPath)) {
+            // attempt to download from first run
+            self::downloadMystem([$letter]);
         }
 
         if (!file_exists($binaryPath)) {

@@ -1,9 +1,15 @@
 {
     "name": "sheronov/php-mystem",
-    "version": "1.0.7",
+    "version": "1.1.0",
     "description": "A PHP wrapper for Yandex MyStem program",
     "type": "project",
-    "keywords": ["lemma", "lemmatize", "stemmer", "yandex", "mystem"],
+    "keywords": [
+        "lemma",
+        "lemmatize",
+        "stemmer",
+        "yandex",
+        "mystem"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -17,7 +23,7 @@
         }
     },
     "bin": [
-        "bin/mystem-downloader.php"
+        "bin/mystem-downloader"
     ],
     "minimum-stability": "dev",
     "repositories": [
@@ -67,10 +73,10 @@
     },
     "scripts": {
         "pre-install-cmd": [
-            "Sheronov\\PhpMyStem\\Utils\\System::nixBinaryFileSelect"
+            "bin/mystem-downloader"
         ],
         "pre-update-cmd": [
-            "Sheronov\\PhpMyStem\\Utils\\System::nixBinaryFileSelect"
+            "bin/mystem-downloader"
         ]
     },
     "extra": {
