@@ -37,13 +37,15 @@ class MyStem
         $output = [];
         $result = static::run($text, ['--weight', '-gid']);
         foreach ($result as $analyze) {
-            $output[] = [
-                'text'   => $analyze['text'],
-                'lemma'  => $analyze['analysis'][0]['lex'],
-                'weight' => $analyze['analysis'][0]['wt'],
-                'gram'   => $analyze['analysis'][0]['gr'],
-                'wrong' => ($analyze['analysis'][0]['qual'] ?? null) === 'bastard'
-            ];
+            if (isset($analyze['analysis'][0]['lex'])) {
+                $output[] = [
+                    'text'   => $analyze['text'],
+                    'lemma'  => $analyze['analysis'][0]['lex'],
+                    'weight' => $analyze['analysis'][0]['wt'] ?? 1,
+                    'gram'   => $analyze['analysis'][0]['gr'] ?? '',
+                    'wrong'  => ($analyze['analysis'][0]['qual'] ?? null) === 'bastard'
+                ];
+            }
         }
 
         return $output;
