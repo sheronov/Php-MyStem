@@ -37,7 +37,7 @@ for ($i = 1, $total = count($argv); $i < $total; $i++) {
     }
 }
 
-System::downloadMystem($oses);
+System::downloadMystem($oses, true);
 
 
 

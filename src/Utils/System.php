@@ -74,7 +74,7 @@ class System
         return $output;
     }
 
-    public static function downloadMystem(array $oses = []): void
+    public static function downloadMystem(array $oses = [], bool $fromConsole = false): void
     {
         if (empty($oses)) {
             $oses = ['l', 'w', 'm'];
@@ -94,7 +94,9 @@ class System
 
                 if (!file_exists($localPath)) {
                     if (self::downloadFile($url, $localPath)) {
-                        echo 'Success downloaded file from '.$url.' for '.$os.PHP_EOL;
+                        if ($fromConsole) {
+                            echo 'Success downloaded file from '.$url.' for '.$os.PHP_EOL;
+                        }
                     } else {
                         throw new RuntimeException('Error download file '.$url.' for '.$os);
                     }
@@ -105,11 +107,15 @@ class System
                 }
 
                 if (self::isArchive($localPath) && self::unArchive($localPath, mb_strtolower($os))) {
-                    echo 'Success unarchived to '.$toPath.mb_strtolower($os).' directory'.PHP_EOL;
+                    if ($fromConsole) {
+                        echo 'Success unarchived to '.$toPath.mb_strtolower($os).' directory'.PHP_EOL;
+                    }
                     try {
                         unlink($localPath);
                     } catch (Exception $exception) {
-                        echo 'Can not delete file '.$localPath.PHP_EOL;
+                        if ($fromConsole) {
+                            echo 'Can not delete file '.$localPath.PHP_EOL;
+                        }
                     }
                 }
             }
