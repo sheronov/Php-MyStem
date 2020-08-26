@@ -56,16 +56,13 @@ class MyStem
         $result = static::run($text, ['--weight', '-gi']);
         foreach ($result as $analyze) {
             if (isset($analyze['analysis'][0]['lex'])) {
-                $gramInfo = $analyze['analysis'][0]['gr'] ?? '';
-                $partOfSpeech = explode(',', explode('=', $gramInfo)[0])[0];
-
                 $output[] = [
                     'text'        => $analyze['text'],
                     'lemma'       => $analyze['analysis'][0]['lex'],
                     'weight'      => $analyze['analysis'][0]['wt'] ?? 0,
-                    'gram'        => $gramInfo,
-                    'part_letter' => $partOfSpeech ?: null,
-                    'part_more'   => static::PARTS_OF_SPEECH[$partOfSpeech] ?? static::UNDEFINED_PART_OF_SPEECH,
+                    'gram'        => $analyze['analysis'][0]['gr'] ?? '',
+                    'part_letter' => static::partOfSpeech($analyze['analysis'][0]['gr'] ?? '', true) ?: null,
+                    'part_more'   => static::partOfSpeech($analyze['analysis'][0]['gr'] ?? '', false),
                     'wrong'       => ($analyze['analysis'][0]['qual'] ?? null) === 'bastard'
                 ];
             }
@@ -92,5 +89,12 @@ class MyStem
         }
 
         return [];
+    }
+
+    public static function partOfSpeech(string $gram, bool $shortVariant = false): string
+    {
+        $shortPoS = explode(',', explode('=', $gram)[0])[0];
+
+        return $shortVariant ? $shortPoS : (static::PARTS_OF_SPEECH[$shortPoS] ?? static::UNDEFINED_PART_OF_SPEECH);
     }
 }
