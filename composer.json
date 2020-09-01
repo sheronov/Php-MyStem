@@ -69,7 +69,8 @@
         "php": "^7.2",
         "ext-json": "*",
         "ext-curl": "*",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "ext-mbstring": "*"
     },
     "scripts": {
         "pre-install-cmd": [

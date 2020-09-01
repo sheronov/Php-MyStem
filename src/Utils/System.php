@@ -117,8 +117,17 @@ class System
                             echo 'Can not delete file '.$localPath.PHP_EOL;
                         }
                     }
+                    self::changeFilesModeToExecute($toPath.mb_strtolower($os));
                 }
             }
+        }
+    }
+
+    protected static function changeFilesModeToExecute(string $path): void
+    {
+        $files = glob($path.DIRECTORY_SEPARATOR.'*');
+        foreach ($files as $file) {
+            chmod($file, 0555);
         }
     }
 
