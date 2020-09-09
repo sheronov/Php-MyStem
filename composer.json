@@ -1,6 +1,6 @@
 {
     "name": "sheronov/php-mystem",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "description": "A PHP wrapper for Yandex MyStem program",
     "type": "project",
     "keywords": [
