@@ -74,7 +74,7 @@ class System
         return $output;
     }
 
-    public static function downloadMystem(array $oses = [], bool $fromConsole = false): void
+    public static function downloadMystem(array $oses = [], bool $fromConsole = false, bool $reRun = false): void
     {
         if (empty($oses)) {
             $oses = ['l', 'w', 'm'];
@@ -106,7 +106,16 @@ class System
                     self::recursiveDelete($toPath.mb_strtolower($os));
                 }
 
-                if (self::isArchive($localPath) && self::unArchive($localPath, mb_strtolower($os))) {
+                if (self::isArchive($localPath)) {
+                    try {
+                        self::unArchive($localPath, mb_strtolower($os));
+                    } catch (Exception $exception) {
+                        if (!$reRun) {
+                            unlink($localPath);
+                            self::downloadMystem($oses, $fromConsole, true);
+                        }
+                        return;
+                    }
                     if ($fromConsole) {
                         echo 'Success unarchived to '.$toPath.mb_strtolower($os).' directory'.PHP_EOL;
                     }
