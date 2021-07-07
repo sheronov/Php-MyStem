@@ -19,9 +19,9 @@ class System
     protected const FAMILY_MACOS   = 'Darwin';
 
     protected const BIN_PATH    = 'bin';
-    protected const WINDOWS_BIN = 'windows/mystem.exe';
-    protected const LINUX_BIN   = 'linux/mystem';
-    protected const MACOS_BIN   = 'macos/mystem';
+    protected const WINDOWS_BIN = 'windows'.DIRECTORY_SEPARATOR.'mystem.exe';
+    protected const LINUX_BIN   = 'linux'.DIRECTORY_SEPARATOR.'mystem';
+    protected const MACOS_BIN   = 'macos'.DIRECTORY_SEPARATOR.'mystem';
 
     /**
      * Running MyStem with input as pipe to proc through php proc_open
@@ -226,8 +226,6 @@ class System
     protected static function myStemPath(): string
     {
         $binPath = self::binPath();
-        $binaryPath = null;
-        $letter = null;
 
         switch (true) {
             case self::isWindows():

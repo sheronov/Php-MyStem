@@ -18,9 +18,8 @@ use Sheronov\PhpMyStem\Utils\System;
 echo <<<EOT
 This is MyStem downloader from Yandex CDN.
 
-By default it downloads all mystem binaries for Windows, Linux and Macos (-wsl)
-
-For example, if you want download only for Linux, please provide argument -l
+By default it downloads all mystem binaries for Windows, Linux and macOS
+If you want download only for Linux, please provide argument -l
 
 -l - bin for Linux
 -w - exe for Windows

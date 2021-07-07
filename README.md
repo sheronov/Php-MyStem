@@ -11,6 +11,16 @@ composer config repositories.php-mystem vcs https://github.com/sheronov/php-myst
 ```
 composer require sheronov/php-mystem
 ```
+3. On first launch, the package will download mystem binaries from yandex, but you can do it manually
+```
+ ./vendor/bin/mystem-downloader.php
+```
+By default, it downloads all mystem binaries for Windows, Linux and macOS.  
+If you want download only for one system, please provide an argument:
+- -l - bin for Linux
+- -w - exe for Windows
+- -m - bin for Macos
+
 ## Usage
 
 **lemmatization** (Приведение словоформы к лемме — её нормальной (словарной) форме.)
